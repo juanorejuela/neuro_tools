@@ -22,6 +22,11 @@ extract_ts \
 	--out results/
 
 dmn_connectivity --in results/
+```
 
 ## Notes
 ROIs are defined in MNI space using canonical DMN coordinates.
+- PCC (0, -52, 26)
+- mPFC (3, 54, -2)
+- IPL L (-50, -63, 32)
+- IPL R (48, -69, 35)
