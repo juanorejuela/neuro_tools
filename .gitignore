@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.nii
+*.nii.gz
+*.tsv
+*.csv
+results/
+.derivatives/
+.env
+.envs
+.ipynb_checkpoints/
+*.egg-info/

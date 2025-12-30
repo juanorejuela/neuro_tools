@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+import argparse
+import glob
+import os
+import numpy as np
+import pandas as pd
+from nilearn.connectome import ConnectivityMeasure
+
+def main():
+	parser = argparse.ArgumentParser(
+		description="Compute intra-DMN connectivity metrics"
+	)
+
+	parser.add_argument("--ts-dir", required=True, help="Directory with sub-XX folders containing the PCC, mPFC, IPL L and R .txt files.")
+	parser.add_argument("--out", required=True, help="Output CSV file including PCC-mPFC, PCC-IPL_L, PCC-IPL_R, and mean intra DMN.")
+
+	args = parser.parse_args()
+
+	rows=[]
+
+	for sub in sorted(glob.glob(os.path.join(args.ts_dir, "sub-*"))):
+		sid = os.path.basename(sub)
+
+		try:
+			ts  = np.column_stack([
+				np.loadtxt(f"{sub}/PCC.txt"),
+				np.loadtxt(f"{sub}/mPFC.txt"),
+				np.loadtxt(f"{sub}/IPL_L.txt"),
+				np.loadtxt(f"{sub}/IPL_R.txt")
+			])
+		except Exception:
+			print(f"[WARN] Missing files for {sid}")
+			continue
+
+		conn = ConnectivityMeasure(kind="correlation")
+		corr = conn.fit_transform([ts])[0]
+
+		rows.append({
+			"subject": sid,
+			"PCC_mPFC": corr[0,1],
+			"PCC_IPL_L": corr[0,2],
+			"PCC_IPL_R": corr[0,3],
+			"mean_intra_DMN": corr[0,1:4].mean()
+		})
+
+	df = pd.DataFrame(rows)
+	df.to_csv(args.out, index = False)
+
+	print(f"[OK] Saved {len(df)} subjects to {args.out}")
+
+if __name__ == "__main__":
+	main()
+ 
