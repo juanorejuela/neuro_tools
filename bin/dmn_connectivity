@@ -9,7 +9,7 @@ from nilearn.connectome import ConnectivityMeasure
 
 def main():
 	parser = argparse.ArgumentParser(
-		description="Compute intra-DMN connectivity metrics"
+		description="Compute intra-DMN connectivity metrics (Pearson + Fisher Z)"
 	)
 
 	parser.add_argument("--ts-dir", required=True, help="Directory with sub-XX folders containing the PCC, mPFC, IPL L and R .txt files.")
@@ -35,13 +35,23 @@ def main():
 
 		conn = ConnectivityMeasure(kind="correlation")
 		corr = conn.fit_transform([ts])[0]
+		print(corr)
+		z_corr = np.arctanh(corr)
 
 		rows.append({
 			"subject": sid,
-			"PCC_mPFC": corr[0,1],
-			"PCC_IPL_L": corr[0,2],
-			"PCC_IPL_R": corr[0,3],
-			"mean_intra_DMN": corr[0,1:4].mean()
+			# Pearson
+			"PCC_mPFC_Pearson": corr[0,1],
+			"PCC_IPL_L_Pearson": corr[0,2],
+			"PCC_IPL_R_Pearson": corr[0,3],
+			# Fisher Z
+			"PCC_mPFC_FisherZ": z_corr[0,1],
+			"PCC_IPL_L_FisherZ": z_corr[0,2],
+			"PCC_IPL_R_FisherZ": z_corr[0,3],
+			# AVG intra-DMN (Fisher Z)
+			"mean_intra_DMN_Z": np.mean(z_corr[0,1:4]),
+			# AVG converted to r (optional)
+			"mean_intra_DMN_r": np.tanh(np.mean(z_corr[0,1:4]))
 		})
 
 	df = pd.DataFrame(rows)
