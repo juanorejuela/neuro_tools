@@ -79,7 +79,7 @@ BIDS/
 │	│	├── anat/
 │	│	├── figures/
 │	│	├── func/
-│	│	└── log7
+│	│	└── log/
 │	├── sub-02/
 │	├── ...
 │	├── sub-XX/
@@ -105,4 +105,54 @@ Podrá validar los resultados utilizando los html ubicados dentro de la carpeta 
 ### Metodología
 fMRIPrep (v.25.2.3) [10.1038/s41592-018-0235-4]
 
+## Cálculo de conectividad interna de la Red Neuronal por Defecto (DMN)
+
 ## Identificación cuantitativa de la red neuronal por defecto (DMN)
+El primer paso es ejecutar el MELODIC ICA de FSL. Para esto, utilizaremos el volumen sub-XX\_task-reposo...desc-preproc\_bold.nii.gz como entrada.
+La salida del MELODIC ICA tendrá una estructura:
+
+```text
+melodic_results/
+├── sub-01.ica/
+│	├── .files/
+│	├── filtered_func_data.ica/
+│	│	├── melodic_IC.nii.gz
+│	│	└── ...
+│	├── logs/
+│	├── mc/
+│	├── reg/
+│	├── absbrainthresh.txt
+│	├── design.fsf
+│	├── example_func.nii.gz
+│	├── filtered_func_data.nii.gz
+│	├── mask.nii.gz
+│	├── mean_func.nii.gz
+│	├── report.html
+│	├── report_log.html
+│	├── report_prestats.html
+│	├── report_reg.html
+│	└── report_unwarp.html
+├── sub-02.ica/
+├── ...
+└── sub-XX.ica/
+```
+
+Posteriormente, realizaremos un resampling de la máscara Yeo 7 (DMN), y calcularemos las correlaciones entre la máscara y las redes neuronales encontradas en el análisis ICA a fin de identificar aquella red con la correlación más alta.
+El volumen de entrada para este proceso es melodic_IC.nii.gz ubicada en melodic\_results/sub-XX.ica/filtered\_func\_data.ica/
+
+```bash
+flirt -in ~/research/__tools/atlas/Yeo7_DMN-3mm-mask_bin.nii.gz -ref filtered_func_data.ica/melodic_IC.nii.gz -applyxfm -usesqform -out rois/Yeo7_DMN-3mm-mask_bin_resampled.nii.gz
+
+fslcc filtered_func_data.ica/melodic_IC.nii.gz Yeo7_DMN-3mm-mask_bin_resampled.nii.gz
+```
+
+El resultado será una lista de correlaciones, una por componente, sugiriendo que la correlación más alta corresponde al componente que mayor probabilidad tiene de ser la DMN. Esto también puede ser ejecutado con las otras redes de Yeo:
+Yeo 1: Medial visual
+Yeo 2: Sensory motor
+Yeo 3: Dorsal attention
+Yeo 4: Ventral attention
+Yeo 5: Frontoparietal
+Yeo 6: Default Mode Network
+Yeo 7: Subcortical
+
+Todas las redes se encuentran disponibles en ~research/__toolts/atlas/
