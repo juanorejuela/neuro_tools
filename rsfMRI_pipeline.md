@@ -66,6 +66,8 @@ Para ejecutar, siga las siguientes instrucciones:
 ```bash
 source fmriprep/bin/activate
 fmriprep-docker bids_folder bids_folder_derivatives participant -w work/
+# Si se utilizará fMRIPost-Aroma es importante agregar el flag --output-spaces con el valor MNI152NLin6Asym:res-02
+fmriprep-docker bids_folder bids_folder_derivatives participant -w work/ --output-spaces MNI152Nlin6Asym:res-02
 fmriprep-docker BIDS/ BIDS/derivatives/ participant -w work/
 ```
 
@@ -106,6 +108,22 @@ Podrá validar los resultados utilizando los html ubicados dentro de la carpeta 
 
 ### Metodología
 fMRIPrep (v.25.2.3) [10.1038/s41592-018-0235-4]
+
+## AROMA
+Antes de utilizar el volumen BOLD de la secuencia de reposo, es importante ejecutar el flujo de AROMA. Es importante garantizar que el preprocesamiento realizado con fMRIPrep incluya las salidas en espacio MNI152NLin6Asym con voxeles de 2 mm3.
+Para ejecutar el fMRIPost-AROMA, use la siguiente función:
+
+```bash
+docker run --rm -it \
+-v ~/research/_test/BIDS/derivatives:/data/fmriprep:ro \
+-v ~/research/_test/BIDS/derivatives/fmripost_out:/out \
+nipreps/fmripost-aroma:main /data/fmriprep /out participant
+```
+
+El volumen resultante de interés se encontrará en la subcarpeta func/ y será el volumen sub-XX...desc-aggrDenoised:bold.nii.gz
+
+### Metodología
+fMRIPost-AROMA versión 0.1
 
 ## Cálculo de conectividad interna de la Red Neuronal por Defecto (DMN)
 Para calcular la conectividad intra-DMN, se extraen las series temporales de cada región de interés que componen la DMN (PCC, mPFC, IPC derecha e izquierda), utilizando como entrada el volumen .nii preprocesado con fMRIPrep. Las regiones de interés son construidas utilizando las coordenadas definidas más adelante y un radio de 6 mm.. Las señales son estandarizadas temporalmente (z-score) para normalizar la señal y minimizar la variabilidad entre regiones. Se calculan las correlaciones de Pearson entre las ROI. Posteriormente, los coeficientes de correlación se transforman mediante la transformación de Fisher z con el fin de cumplir los supuestos de normalidad, permitiendo la aplicación de pruebas estadísticas paramétricas y el cálculo de promedios de conectividad por sujeto y por red en análisis de grupos.
