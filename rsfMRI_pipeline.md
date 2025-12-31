@@ -120,7 +120,7 @@ docker run --rm -it \
 nipreps/fmripost-aroma:main /data/fmriprep /out participant
 ```
 
-El volumen resultante de interés se encontrará en la subcarpeta func/ y será el volumen sub-XX...desc-aggrDenoised:bold.nii.gz
+El volumen resultante de interés se encontrará en la subcarpeta func/ y será el volumen sub-XX...desc-aggrDenoised_bold.nii.gz
 
 ### Metodología
 fMRIPost-AROMA versión 0.1
