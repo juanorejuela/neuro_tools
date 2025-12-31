@@ -181,13 +181,13 @@ fslcc filtered_func_data.ica/melodic_IC.nii.gz rois/Yeo7_DMN-3mm-mask_bin_resamp
 
 El resultado será una lista de correlaciones, una por componente, sugiriendo que la correlación más alta corresponde al componente que mayor probabilidad tiene de ser la DMN. 
 Esto también puede ser ejecutado con las otras redes de Yeo:
--Yeo 1: Medial visual
--Yeo 2: Sensory motor
--Yeo 3: Dorsal attention
--Yeo 4: Ventral attention
--Yeo 5: Frontoparietal
--Yeo 6: Default Mode Network
--Yeo 7: Subcortical
+- Yeo 1: Medial visual
+- Yeo 2: Sensory motor
+- Yeo 3: Dorsal attention
+- Yeo 4: Ventral attention
+- Yeo 5: Frontoparietal
+- Yeo 6: Default Mode Network
+- Yeo 7: Subcortical
 
 Todas las redes se encuentran disponibles en ~research/__toolts/atlas/
 
