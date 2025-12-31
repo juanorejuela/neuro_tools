@@ -111,10 +111,7 @@ Este proceso se realiza mediante la utilización de dos funciones desarrolladas 
 ```bash
 extract_ts --bold bold_file --confounds conf_file -o results
 extract_ts --bold BIDS/derivatives/sub-XX/func/sub-XX_task-reposo...desc-preproc_bold.nii.gz --confounds BIDS/derivatives/sub-XX/func/sub-XX_task-reposo...confounds_timeseries.tsv --out BIDS/derivatives/dmn_results
-
-dmn_connectivity --ts-dir BIDS/derivatives/dmn_results/ --out BIDS/derivatives/dmn_results/metrics.csv
 ```
-
 La carpeta results/ resultante del extract_ts debe estar en una estructura así:
 
 ```text
@@ -128,6 +125,13 @@ BIDS/derivatives/dmn_results/
 ├── ...
 └── sub-XX/
 ```
+
+Cuando todos los sujetos han sido procesados, ejecutar dmn_connectivity para extrar las correlaciones de todo el grupo.
+
+```bash
+dmn_connectivity --ts-dir BIDS/derivatives/dmn_results/ --out BIDS/derivatives/dmn_results/metrics.csv
+```
+
 
 ### Metodología
 Se definieron regiones de interés esféricas (radio de 6 mm) para equilibrar la especificidad anatómica y la relación señal-ruido, en consonancia con estudios previos de conectividad por fMRI. Las semillas se construyeron en el espacio del Instituto Neurológico de Montreal (MNI): corteza cingulada posterior (PCC) (0, -53, 26), corteza prefrontal medial (mPFC) (3, 54, -2), corteza intraparietal izquierda (LIPC) (-50, -63, 32) y corteza intraparietal derecha (RIPC) (48, -69, 35).
