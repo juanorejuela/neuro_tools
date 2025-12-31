@@ -143,7 +143,7 @@ El volumen de entrada para este proceso es melodic_IC.nii.gz ubicada en melodic\
 ```bash
 flirt -in ~/research/__tools/atlas/Yeo7_DMN-3mm-mask_bin.nii.gz -ref filtered_func_data.ica/melodic_IC.nii.gz -applyxfm -usesqform -out rois/Yeo7_DMN-3mm-mask_bin_resampled.nii.gz
 
-fslcc filtered_func_data.ica/melodic_IC.nii.gz Yeo7_DMN-3mm-mask_bin_resampled.nii.gz
+fslcc filtered_func_data.ica/melodic_IC.nii.gz rois/Yeo7_DMN-3mm-mask_bin_resampled.nii.gz
 ```
 
 El resultado será una lista de correlaciones, una por componente, sugiriendo que la correlación más alta corresponde al componente que mayor probabilidad tiene de ser la DMN. Esto también puede ser ejecutado con las otras redes de Yeo:
