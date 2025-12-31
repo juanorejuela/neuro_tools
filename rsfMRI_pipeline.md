@@ -48,7 +48,6 @@ BIDS/
 ├── participants.json
 ├── participants.tsv
 └── README
-
 ```
 ### Metodología
 Todos los datos DICOM fueron organizados y convertidos al estándar BIDS (Brain Imaging Data Structure) usando BIDScoin (v.4.6.2), siguiendo la metodología y recomendaciones descritas por Zwiers et al. [10.3389/fninf.2021.770608]
@@ -106,6 +105,33 @@ Podrá validar los resultados utilizando los html ubicados dentro de la carpeta 
 fMRIPrep (v.25.2.3) [10.1038/s41592-018-0235-4]
 
 ## Cálculo de conectividad interna de la Red Neuronal por Defecto (DMN)
+Para calcular la conectividad intra-DMN, se extraen las series temporales de cada región de interés que componen la DMN (PCC, mPFC, IPC derecha e izquierda), utilizando como entrada el volumen .nii preprocesado con fMRIPrep. Las regiones de interés son construidas utilizando las coordenadas definidas más adelante y un radio de 6 mm.. Las señales son estandarizadas temporalmente (z-score) para normalizar la señal y minimizar la variabilidad entre regiones. Se calculan las correlaciones de Pearson entre las ROI. Posteriormente, los coeficientes de correlación se transforman mediante la transformación de Fisher z con el fin de cumplir los supuestos de normalidad, permitiendo la aplicación de pruebas estadísticas paramétricas y el cálculo de promedios de conectividad por sujeto y por red en análisis de grupos.
+Este proceso se realiza mediante la utilización de dos funciones desarrolladas in-house:
+
+```bash
+extract_ts --bold bold_file --confounds conf_file -o results
+extract_ts --bold BIDS/derivatives/sub-XX/func/sub-XX_task-reposo...desc-preproc_bold.nii.gz --confounds BIDS/derivatives/sub-XX/func/sub-XX_task-reposo...confounds_timeseries.tsv --out BIDS/derivatives/dmn_results
+
+dmn_connectivity --ts-dir BIDS/derivatives/dmn_results/ --out BIDS/derivatives/dmn_results/metrics.csv
+```
+
+La carpeta results/ resultante del extract_ts debe estar en una estructura así:
+
+```text
+BIDS/derivatives/dmn_results/
+├── sub-01/
+│	├── IPL_L.txt
+│	├── IPL_R.txt
+│	├── mPFC.txt
+│	└── PCC.txt
+├── sub-02/
+├── ...
+└── sub-XX/
+```
+
+### Metodología
+Se definieron regiones de interés esféricas (radio de 6 mm) para equilibrar la especificidad anatómica y la relación señal-ruido, en consonancia con estudios previos de conectividad por fMRI. Las semillas se construyeron en el espacio del Instituto Neurológico de Montreal (MNI): corteza cingulada posterior (PCC) (0, -53, 26), corteza prefrontal medial (mPFC) (3, 54, -2), corteza intraparietal izquierda (LIPC) (-50, -63, 32) y corteza intraparietal derecha (RIPC) (48, -69, 35).
+[10.1038/srep46088, 10.1016/j.neuroimage.2013.07.071, 10.3389/fnhum.2016.00014]
 
 ## Identificación cuantitativa de la red neuronal por defecto (DMN)
 El primer paso es ejecutar el MELODIC ICA de FSL. Para esto, utilizaremos el volumen sub-XX\_task-reposo...desc-preproc\_bold.nii.gz como entrada.
@@ -147,12 +173,22 @@ fslcc filtered_func_data.ica/melodic_IC.nii.gz rois/Yeo7_DMN-3mm-mask_bin_resamp
 ```
 
 El resultado será una lista de correlaciones, una por componente, sugiriendo que la correlación más alta corresponde al componente que mayor probabilidad tiene de ser la DMN. Esto también puede ser ejecutado con las otras redes de Yeo:
-Yeo 1: Medial visual
-Yeo 2: Sensory motor
-Yeo 3: Dorsal attention
-Yeo 4: Ventral attention
-Yeo 5: Frontoparietal
-Yeo 6: Default Mode Network
-Yeo 7: Subcortical
+-Yeo 1: Medial visual
+-Yeo 2: Sensory motor
+-Yeo 3: Dorsal attention
+-Yeo 4: Ventral attention
+-Yeo 5: Frontoparietal
+-Yeo 6: Default Mode Network
+-Yeo 7: Subcortical
 
 Todas las redes se encuentran disponibles en ~research/__toolts/atlas/
+
+Para extrer la red del melodic_IC.nii.gz y generar una máscara de la red, en caso de ser necesarios, puede ejecutar los siguientes comandos:
+
+```bash
+fslroi filtered_func_data.ica/melodic_IC.nii.gz results/comp_DMN.nii.gz N 1
+
+fslmaths resuts/comp_DMN.nii.gz -thr 3 -bin results/comp_DMN_mask.nii.gz
+```
+
+Los componentes están en 4D, en el comando fslroi reemplace N por el # del componente deseado empezando en 0, es decir, si el componente identificado es el #34, defina 33.
