@@ -23,8 +23,8 @@ BIDScoin ha sido instalado en un entorno específico. Para ejecutarlo, siga las 
 
 ```bash
 source bidscoin/bin/activate
-bidsmapper source_folder bids_folder
-bidscoiner source_folder bids_folder
+bidsmapper source_folder bids_folder # Scans your data and creates a study bidsmap
+bidscoiner source_folder bids_folder # Converts your data to BIDS using the study bidsmap
 ```
 
 Al finalizar bidsmapper, se abrirá un cuadro de diálogo para validar el resultado del proceso. Acá se debe validar que las secuencias hayan sido clasificadas correctamente (por ej. anat, func, ...), excluir aquellas que no sean necesarias, ajustar la estructura de los nombres si fuera necesario, etc.
@@ -49,6 +49,9 @@ BIDS/
 ├── participants.tsv
 └── README
 ```
+
+Para validar el resultado, puede utilizar alguna herramienta BIDS validator como: https://bids-standard.github.io/bids-validator/
+
 ### Metodología
 Todos los datos DICOM fueron organizados y convertidos al estándar BIDS (Brain Imaging Data Structure) usando BIDScoin (v.4.6.2), siguiendo la metodología y recomendaciones descritas por Zwiers et al. [10.3389/fninf.2021.770608]
 
@@ -176,7 +179,8 @@ flirt -in ~/research/__tools/atlas/Yeo7_DMN-3mm-mask_bin.nii.gz -ref filtered_fu
 fslcc filtered_func_data.ica/melodic_IC.nii.gz rois/Yeo7_DMN-3mm-mask_bin_resampled.nii.gz
 ```
 
-El resultado será una lista de correlaciones, una por componente, sugiriendo que la correlación más alta corresponde al componente que mayor probabilidad tiene de ser la DMN. Esto también puede ser ejecutado con las otras redes de Yeo:
+El resultado será una lista de correlaciones, una por componente, sugiriendo que la correlación más alta corresponde al componente que mayor probabilidad tiene de ser la DMN. 
+Esto también puede ser ejecutado con las otras redes de Yeo:
 -Yeo 1: Medial visual
 -Yeo 2: Sensory motor
 -Yeo 3: Dorsal attention
