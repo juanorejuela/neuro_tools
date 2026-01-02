@@ -65,10 +65,10 @@ Para ejecutar, siga las siguientes instrucciones:
 
 ```bash
 source fmriprep/bin/activate
-fmriprep-docker bids_folder bids_folder_derivatives participant -w work/
+fmriprep-docker bids_folder bids_folder_derivatives participant -w work/ --fs-license-file ~/license.txt
 # Si se utilizará fMRIPost-Aroma es importante agregar el flag --output-spaces con el valor MNI152NLin6Asym:res-02
-fmriprep-docker bids_folder bids_folder_derivatives participant -w work/ --output-spaces MNI152Nlin6Asym:res-02
-fmriprep-docker BIDS/ BIDS/derivatives/ participant -w work/
+fmriprep-docker bids_folder bids_folder_derivatives participant -w work/ --output-spaces MNI152Nlin6Asym:res-02 --fs-license-file ~/license.txt
+fmriprep-docker BIDS/ BIDS/derivatives/ participant -w work/ --fs-license-file ~/license.txt
 ```
 
 Al finalizar, los resultados estarán en la carpeta BIDS/derivatives/ siguiendo una estructura así:
@@ -153,6 +153,7 @@ Cuando todos los sujetos han sido procesados, ejecutar dmn_connectivity para ext
 dmn_connectivity --ts-dir BIDS/derivatives/dmn_results/ --out BIDS/derivatives/dmn_results/metrics.csv
 ```
 
+El resultado (metrics.csv) tendrá los valores de correlación de Pearson y la transformación Fisher z para cada par de ROI y cada sujeto, incluyendo también el promedio.
 
 ### Metodología
 Se definieron regiones de interés esféricas (radio de 6 mm) para equilibrar la especificidad anatómica y la relación señal-ruido, en consonancia con estudios previos de conectividad por fMRI. Las semillas se construyeron en el espacio del Instituto Neurológico de Montreal (MNI): corteza cingulada posterior (PCC) (0, -53, 26), corteza prefrontal medial (mPFC) (3, 54, -2), corteza intraparietal izquierda (LIPC) (-50, -63, 32) y corteza intraparietal derecha (RIPC) (48, -69, 35).
