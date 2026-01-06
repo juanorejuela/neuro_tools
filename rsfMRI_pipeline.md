@@ -110,14 +110,17 @@ Podrá validar los resultados utilizando los html ubicados dentro de la carpeta 
 fMRIPrep (v.25.2.3) [10.1038/s41592-018-0235-4]
 
 ## AROMA
-Antes de utilizar el volumen BOLD de la secuencia de reposo, es importante ejecutar el flujo de AROMA. Es importante garantizar que el preprocesamiento realizado con fMRIPrep incluya las salidas en espacio MNI152NLin6Asym con voxeles de 2 mm3.
+Antes de utilizar el volumen BOLD de la secuencia de reposo, debemos ejecutar el flujo de AROMA. Es importante garantizar que el preprocesamiento realizado con fMRIPrep incluya las salidas en espacio MNI152NLin6Asym con voxeles de 2 mm3.
+Este proceso se divide en dos partes: clasificación y regresión. En la primera parte, se corre un ICA obteniendo componentes independientes y cada componente es clasificado como ruido o señal. El resultado de este primer proceso, es una lista de métricas y componentes con su respectiva clasificación.
+En la segunda parte del proeso, se realiza el proceso de _denoising_, mediante el cual se toman los componentes clasificados como ruido, se utilizan como regresores y se genera un volumen limpio. Este volumen limpio (_denoised_) es el que se utilizará para fases posteriores.
 Para ejecutar el fMRIPost-AROMA, use la siguiente función:
 
 ```bash
 docker run --rm -it \
 -v ~/research/_test/BIDS/derivatives:/data/fmriprep:ro \
 -v ~/research/_test/BIDS/derivatives/fmripost_out:/out \
-nipreps/fmripost-aroma:main /data/fmriprep /out participant
+nipreps/fmripost-aroma:0.0.12 /data/fmriprep /out participant \
+--denoising-method aggr
 ```
 
 El volumen resultante de interés se encontrará en la subcarpeta func/ y será el volumen sub-XX...desc-aggrDenoised_bold.nii.gz
