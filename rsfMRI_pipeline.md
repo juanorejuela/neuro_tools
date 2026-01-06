@@ -68,7 +68,7 @@ fmriprep-docker BIDS/ BIDS/derivatives/ participant -w work/ --fs-license-file ~
 #  Si se utilizará fMRIPost-Aroma es importante agregar el flag \
 ## --output-spaces con el valor MNI152NLin6Asym:res-02
 fmriprep-docker bids_folder bids_folder_derivatives participant -w work/ \
---output-spaces MNI152Nlin6Asym:res-02 --fs-license-file ~/license.txt
+--output-spaces MNI152NLin6Asym:res-02 --fs-license-file ~/license.txt
 ```
 
 Al finalizar, los resultados estarán en la carpeta BIDS/derivatives/ siguiendo una estructura así:
@@ -140,6 +140,7 @@ extract_ts --bold BIDS/derivatives/sub-XX/func/sub-XX_task-reposo...desc-preproc
 --confounds BIDS/derivatives/sub-XX/func/sub-XX_task-reposo...confounds_timeseries.tsv \
 --out BIDS/derivatives/dmn_results
 ```
+
 La carpeta results/ resultante del extract_ts debe estar en una estructura así:
 
 ```text
@@ -152,6 +153,18 @@ BIDS/derivatives/dmn_results/
 ├── sub-02/
 ├── ...
 └── sub-XX/
+```
+
+Para hacer un procesamiento secuencial de múltiples sujetos, se puede ejecutar la siguiente función:
+
+```bash
+for sub in ~/project/BIDS/fmri_post/sub-*; do \
+	sid = $(basename $sub); \
+	extract_ts \
+		--bold $sub/func/${sid}_task-Reposo_dir-AP...-aggrDenoised_bold.nii.gz \
+		--confounds ~/project/BIDS/derivatives/${sid}/func/${sid}_task-Reposo_dir-AP...-confounds_timeseries.tsv \
+		--out ~/project/BIDS/derivatives/dmn_results/%{sid}; \
+done
 ```
 
 Cuando todos los sujetos han sido procesados, ejecutar dmn_connectivity para extrar las correlaciones de todo el grupo.
@@ -202,8 +215,8 @@ El volumen de entrada para este proceso es melodic_IC.nii.gz ubicada en melodic\
 
 ```bash
 flirt -in ~/research/__tools/atlas/Yeo7_DMN-3mm-mask_bin.nii.gz \
--ref filtered_func_data.ica/melodic_IC.nii.gz -applyxfm -usesqform \
--out rois/Yeo7_DMN-3mm-mask_bin_resampled.nii.gz
+	-ref filtered_func_data.ica/melodic_IC.nii.gz -applyxfm -usesqform \
+	-out rois/Yeo7_DMN-3mm-mask_bin_resampled.nii.gz
 
 fslcc filtered_func_data.ica/melodic_IC.nii.gz rois/Yeo7_DMN-3mm-mask_bin_resampled.nii.gz
 ```
